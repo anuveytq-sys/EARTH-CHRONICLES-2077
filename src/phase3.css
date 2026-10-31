@@ -1,0 +1,32 @@
+/* Phase 3 — Environmental Transformation */
+.phase3-backdrop{z-index:20;overflow:auto;align-items:center;padding:18px}
+.phase3-card{width:min(980px,96vw);max-height:min(88vh,850px);overflow:auto;scrollbar-width:thin}
+.p3-intro{color:#91aabd;font-size:11px;line-height:1.7;margin:14px 0}
+.p3-tabs{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0}
+.p3-tabs button,.p3-presets button,.p3-actions button{border:1px solid rgba(113,231,242,.24);background:rgba(7,25,42,.76);color:#91adbf;padding:8px 10px;font:8px "DM Mono",monospace;letter-spacing:.6px;cursor:pointer}
+.p3-tabs button.active,.p3-tabs button:hover{color:#71e7f2;border-color:#71e7f2;background:rgba(39,130,150,.18)}
+.p3-layout{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(220px,.8fr);gap:15px}
+.p3-interventions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;align-content:start}
+.p3-item{padding:12px;border:1px solid rgba(133,184,220,.15);background:rgba(8,25,40,.65);min-width:0}
+.p3-item-head{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.p3-item-head small,.p3-score>span,.p3-presets>span{display:block;color:#6e8ca4;font:7px "DM Mono",monospace;letter-spacing:1px}
+.p3-item-head b{display:block;color:#e2f1fa;font-size:11px;margin-top:5px}
+.p3-item-head output{color:#71e7f2;font:14px "DM Mono",monospace}
+.p3-item p{min-height:32px;color:#8199ad;font-size:9px;line-height:1.5;margin:8px 0}
+.p3-item input{width:100%;accent-color:#71e7f2;cursor:pointer}
+.p3-range-label{display:flex;justify-content:space-between;color:#5e788f;font:6px "DM Mono",monospace}
+.p3-side{display:flex;flex-direction:column;gap:10px}
+.p3-score,.p3-metrics,.p3-presets{padding:12px;border:1px solid rgba(133,184,220,.15);background:rgba(8,25,40,.65)}
+.p3-score strong{display:block;color:#71e7f2;font:700 30px "Barlow Condensed",sans-serif;margin:5px 0}
+.p3-score>small{display:block;color:#718ba1;font:7px "DM Mono",monospace;margin-top:6px}
+.p3-meter{height:4px;background:#1a3448}.p3-meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,#358eb9,#71e7f2);transition:width .2s}
+.p3-metrics{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.p3-metrics span{display:block;color:#6e879b;font:6px "DM Mono",monospace;letter-spacing:.4px}
+.p3-metrics b{display:block;color:#e5f5ff;font:18px "Barlow Condensed",sans-serif;margin-top:4px}
+.p3-presets{display:grid;grid-template-columns:1fr 1fr;gap:6px}.p3-presets>span{grid-column:1/-1}
+.p3-presets button{text-align:left;font-size:6px;padding:8px 6px}
+.p3-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px}.p3-actions button{font-size:7px}
+.p3-actions .p3-apply{background:linear-gradient(100deg,#237d94,#155a80);color:#f1fdff;border-color:#71e7f2}
+.p3-foot{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:14px;padding-top:10px;border-top:1px solid rgba(133,184,220,.13);color:#6f8ba0;font:7px "DM Mono",monospace;letter-spacing:.5px}
+.p3-foot>span:last-child{margin-left:auto}
+@media(max-width:680px){.phase3-card{padding:15px}.p3-layout{grid-template-columns:1fr}.p3-interventions{grid-template-columns:1fr}.p3-item p{min-height:0}.p3-foot>span:last-child{margin-left:0}}
