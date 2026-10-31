@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#050b14" />
+    <meta name="description" content="Earth Chronicles 2077 — explore a living planet and prepare to reshape its future." />
+    <title>EARTH CHRONICLES 2077 — Planetary Command</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="app">
+      <div id="world-root" aria-label="Interactive three-dimensional planet Earth"></div>
+      <div class="space-vignette"></div>
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="Earth Chronicles home">
+          <span class="brand-mark"><i></i><i></i><i></i></span>
+          <span><strong>EARTH CHRONICLES</strong><small>PLANETARY COMMAND // 2077</small></span>
+        </a>
+        <div class="top-status"><span class="live-dot"></span><span>SIMULATION ONLINE</span><b>EARTH / SOL-03</b></div>
+        <button class="icon-button" id="settings-open" aria-label="Open settings"><span class="gear">⚙</span></button>
+      </header>
+
+      <main class="interface">
+        <aside class="left-rail">
+          <div class="rail-label">ENVIRONMENTS</div>
+          <button class="rail-item active" data-view="orbital"><span class="rail-icon">◉</span><span>ORBITAL<br/>COMMAND</span><em>01</em></button>
+          <button class="rail-item" data-view="surface"><span class="rail-icon">⌖</span><span>SURFACE<br/>INTEL</span><em>02</em></button>
+          <button class="rail-item" data-view="archive"><span class="rail-icon">▤</span><span>FIELD<br/>ARCHIVE</span><em>03</em></button>
+          <div class="rail-bottom"><span class="rail-line"></span><small>PHASE 01<br/>FOUNDATION</small></div>
+        </aside>
+
+        <section class="hero-copy">
+          <div class="eyebrow"><span class="eyebrow-line"></span> PLANETARY RESTORATION INITIATIVE</div>
+          <h1>ONE PLANET.<br/><span>INFINITE</span><br/>POSSIBILITIES.</h1>
+          <p class="hero-desc">The future is not a destination. It is a world we build, decision by decision. Establish your command, explore the living planet, and prepare for the chronicles ahead.</p>
+          <div class="hero-actions">
+            <button class="primary-button" id="launch-button"><span>ENTER PLANETARY COMMAND</span><b>↗</b></button>
+            <button class="text-button" id="briefing-button">MISSION BRIEFING <span>＋</span></button>
+          </div>
+          <div class="hero-footnote"><span class="pulse-ring"></span> SYSTEM READY <i></i> INITIALIZING RESTORATION ERA</div>
+        </section>
+
+        <section class="right-panel" aria-label="Planetary intelligence">
+          <div class="panel-heading"><span>PLANETARY INTELLIGENCE</span><span class="panel-code">EC / 001</span></div>
+          <div class="planet-name"><small>THIRD PLANET FROM THE SUN</small><h2>EARTH</h2><span class="planet-coord">40° 42' N &nbsp; 74° 00' W <b>●</b></span></div>
+          <div class="metric-grid">
+            <div class="metric"><span>GLOBAL BIOME INDEX</span><strong>68.4<small>%</small></strong><div class="meter"><i style="width:68.4%"></i></div></div>
+            <div class="metric"><span>OCEAN COVERAGE</span><strong>71.0<small>%</small></strong><div class="meter"><i style="width:71%"></i></div></div>
+            <div class="metric"><span>RESTORATION ZONES</span><strong>12<small class="unit"> ACTIVE</small></strong><div class="meter"><i style="width:42%"></i></div></div>
+            <div class="metric"><span>MISSION READINESS</span><strong>100<small>%</small></strong><div class="meter"><i style="width:100%"></i></div></div>
+          </div>
+          <div class="panel-divider"></div>
+          <div class="region-heading"><span>REGIONAL SIGNALS</span><small>SELECT A SIGNAL ↴</small></div>
+          <div class="region-list" id="region-list"></div>
+          <div class="panel-footer"><span class="live-dot"></span> LIVE SIMULATION DATA <span>LOCAL DEMO</span></div>
+        </section>
+
+        <div class="globe-controls">
+          <button id="zoom-in" aria-label="Zoom in">＋</button><button id="zoom-out" aria-label="Zoom out">−</button><button id="reset-view" aria-label="Reset globe view">⌖</button><button id="rotation-toggle" aria-label="Toggle globe rotation" class="rotation-active">⟳</button>
+        </div>
+
+        <div class="bottom-hud">
+          <div class="hud-coordinate"><small>ORBITAL POSITION</small><strong id="coordinates">LAT 00.00° / LNG 00.00°</strong></div>
+          <div class="hud-center"><span class="hud-line"></span><span>EARTH OBSERVATION NETWORK</span><span class="hud-line"></span></div>
+          <div class="hud-time"><small>MISSION ELAPSED</small><strong id="elapsed">00:00:00</strong></div>
+        </div>
+      </main>
+
+      <div class="screen-overlay" id="intro-overlay">
+        <div class="intro-card">
+          <div class="intro-emblem"><span>EC</span><i></i></div>
+          <div class="eyebrow">A PLANETARY SIMULATION EXPERIENCE</div>
+          <h2>THE NEXT CHAPTER<br/><span>IS YOURS TO WRITE.</span></h2>
+          <p>Earth is a living system. Every region holds a story, every choice has a consequence, and every timeline begins with the world we inherit.</p>
+          <button class="primary-button" id="begin-button"><span>INITIALIZE EXPERIENCE</span><b>↗</b></button>
+          <small class="intro-version">EARTH CHRONICLES 2077 <i>•</i> FOUNDATION BUILD 0.1</small>
+        </div>
+      </div>
+
+      <div class="modal-backdrop hidden" id="settings-modal">
+        <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+          <div class="modal-head"><div><small>CONFIGURATION</small><h2 id="settings-title">SYSTEM SETTINGS</h2></div><button class="close-button" data-close="settings-modal" aria-label="Close settings">×</button></div>
+          <div class="settings-list">
+            <label class="setting-row"><span><b>Auto-rotate planet</b><small>Keep the globe in slow orbital motion</small></span><input type="checkbox" id="setting-rotation" checked /></label>
+            <label class="setting-row"><span><b>Regional signal labels</b><small>Show interactive markers on the planet</small></span><input type="checkbox" id="setting-labels" checked /></label>
+            <label class="setting-row"><span><b>Reduced motion</b><small>Reduce interface and camera movement</small></span><input type="checkbox" id="setting-motion" /></label>
+            <label class="setting-row"><span><b>High detail rendering</b><small>Use higher pixel density where available</small></span><input type="checkbox" id="setting-quality" checked /></label>
+          </div>
+          <div class="modal-note">Settings are applied immediately and remain active for this session.</div>
+        </section>
+      </div>
+
+      <div class="modal-backdrop hidden" id="briefing-modal">
+        <section class="modal-card briefing-card" role="dialog" aria-modal="true" aria-labelledby="briefing-title">
+          <div class="modal-head"><div><small>MISSION DOSSIER // 001</small><h2 id="briefing-title">THE LIVING PLANET</h2></div><button class="close-button" data-close="briefing-modal" aria-label="Close briefing">×</button></div>
+          <p class="briefing-lead">The year is 2077. Humanity has a choice: inherit the consequences of yesterday, or design a better tomorrow.</p>
+          <div class="briefing-grid"><div><span>01 / EXPLORE</span><b>Read the planet</b><p>Survey regions, inspect signals and understand the systems that sustain life.</p></div><div><span>02 / UNDERSTAND</span><b>Find the pressure points</b><p>Study ecosystems, water, energy and the balance between human activity and nature.</p></div><div><span>03 / TRANSFORM</span><b>Shape what comes next</b><p>Prepare restoration strategies and discover how decisions can change future timelines.</p></div></div>
+          <button class="primary-button" data-close="briefing-modal"><span>UNDERSTOOD</span><b>↗</b></button>
+        </section>
+      </div>
+
+      <div class="modal-backdrop hidden" id="region-modal">
+        <section class="modal-card region-card" role="dialog" aria-modal="true" aria-labelledby="region-title">
+          <div class="modal-head"><div><small>REGIONAL INTELLIGENCE // SIGNAL LOCKED</small><h2 id="region-title">REGION</h2></div><button class="close-button" data-close="region-modal" aria-label="Close region details">×</button></div>
+          <div class="region-detail-grid"><div><small>BIOME</small><b id="region-biome">—</b></div><div><small>STATUS</small><b id="region-status">—</b></div><div><small>FIELD INDEX</small><b id="region-index">—</b></div></div>
+          <p id="region-description" class="region-description"></p>
+          <div class="region-detail-foot">FIELD ARCHIVE / PHASE 01 <span>DATASET: DEMONSTRATION</span></div>
+        </section>
+      </div>
+
+      <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

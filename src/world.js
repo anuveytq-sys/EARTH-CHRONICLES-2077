@@ -1,0 +1,129 @@
+import * as THREE from "three";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+
+const EARTH_URL = "https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg";
+const CLOUD_URL = "https://threejs.org/examples/textures/planets/earth_clouds_1024.png";
+
+function fallbackEarthTexture() {
+  const canvas = document.createElement("canvas");
+  canvas.width = 1024; canvas.height = 512;
+  const ctx = canvas.getContext("2d");
+  const ocean = ctx.createLinearGradient(0, 0, 0, 512);
+  ocean.addColorStop(0, "#123d5b"); ocean.addColorStop(.5, "#0b3150"); ocean.addColorStop(1, "#071c35");
+  ctx.fillStyle = ocean; ctx.fillRect(0, 0, 1024, 512);
+  ctx.fillStyle = "#397d63"; ctx.strokeStyle = "#6ba982"; ctx.lineWidth = 3;
+  const land = [
+    [[115,90],[175,58],[230,78],[260,130],[235,185],[205,218],[190,280],[155,320],[135,255],[112,200],[80,150]],
+    [[245,280],[285,300],[300,365],[275,435],[245,390],[230,330]],
+    [[445,100],[500,65],[560,82],[580,130],[550,170],[520,155],[500,210],[470,185],[430,145]],
+    [[505,210],[560,205],[590,270],[565,345],[535,400],[500,340],[485,270]],
+    [[630,90],[710,65],[790,100],[830,155],[795,210],[740,205],[700,175],[650,190],[620,140]],
+    [[735,220],[790,220],[815,285],[790,350],[750,330],[725,270]],
+    [[850,370],[920,350],[950,390],[920,425],[870,420]]
+  ];
+  land.forEach(points => { ctx.beginPath(); points.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y)); ctx.closePath(); ctx.fill(); ctx.stroke(); });
+  for (let i=0;i<1500;i++) { const x=Math.random()*1024,y=Math.random()*512; ctx.fillStyle=i%2?"rgba(255,255,255,.025)":"rgba(0,0,0,.035)"; ctx.fillRect(x,y,1.5,1.5); }
+  const texture = new THREE.CanvasTexture(canvas); texture.colorSpace = THREE.SRGBColorSpace; return texture;
+}
+
+export class PlanetWorld {
+  constructor(container, regions, callbacks) {
+    this.container = container; this.regions = regions; this.callbacks = callbacks;
+    this.scene = new THREE.Scene();
+    this.camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
+    this.camera.position.set(0, 0.25, 4.25);
+    this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.7));
+    this.renderer.outputColorSpace = THREE.SRGBColorSpace;
+    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    this.renderer.toneMappingExposure = 1.15;
+    this.container.appendChild(this.renderer.domElement);
+    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+    this.controls.enableDamping = true; this.controls.dampingFactor = 0.045;
+    this.controls.enablePan = false; this.controls.minDistance = 2.25; this.controls.maxDistance = 7;
+    this.controls.autoRotate = true; this.controls.autoRotateSpeed = 0.32;
+    this.planet = new THREE.Group(); this.scene.add(this.planet);
+    this.pickables = []; this.markerMeshes = []; this.labelsVisible = true; this.reducedMotion = false; this.rotationPreference = true;
+    this.raycaster = new THREE.Raycaster(); this.pointer = new THREE.Vector2();
+    this.clock = new THREE.Clock(); this.running = true;
+    this.createLighting(); this.createStars(); this.createEarth(); this.createMarkers();
+    this.onPointer = this.onPointer.bind(this); this.onResize = this.onResize.bind(this); this.animate = this.animate.bind(this);
+    this.renderer.domElement.addEventListener("pointerdown", this.onPointer);
+    window.addEventListener("resize", this.onResize); this.onResize(); this.animate();
+  }
+  createLighting() {
+    this.scene.add(new THREE.AmbientLight(0x7899bb, 1.45));
+    const sun = new THREE.DirectionalLight(0xfff2d8, 3.2); sun.position.set(4, 2, 5); this.scene.add(sun);
+    const rim = new THREE.PointLight(0x3a8dff, 2.4, 12); rim.position.set(-4, -1, -3); this.scene.add(rim);
+  }
+  createStars() {
+    const count = 1800, positions = new Float32Array(count * 3);
+    for (let i=0;i<count;i++) { const radius=THREE.MathUtils.randFloat(13,35), theta=Math.random()*Math.PI*2, phi=Math.acos(THREE.MathUtils.randFloatSpread(2)); positions[i*3]=radius*Math.sin(phi)*Math.cos(theta); positions[i*3+1]=radius*Math.cos(phi); positions[i*3+2]=radius*Math.sin(phi)*Math.sin(theta); }
+    const geometry = new THREE.BufferGeometry(); geometry.setAttribute("position", new THREE.BufferAttribute(positions,3));
+    const material = new THREE.PointsMaterial({ color: 0xa8c9e9, size: 0.045, transparent: true, opacity: 0.75, sizeAttenuation: true });
+    this.stars = new THREE.Points(geometry, material); this.scene.add(this.stars);
+  }
+  createEarth() {
+    const loader = new THREE.TextureLoader(); loader.setCrossOrigin("anonymous");
+    const earthMaterial = new THREE.MeshPhongMaterial({ map: fallbackEarthTexture(), shininess: 12, specular: new THREE.Color(0x244b69) });
+    this.earth = new THREE.Mesh(new THREE.SphereGeometry(1, 96, 96), earthMaterial); this.planet.add(this.earth);
+    loader.load(EARTH_URL, texture => { texture.colorSpace = THREE.SRGBColorSpace; this.earth.material.map = texture; this.earth.material.needsUpdate = true; }, undefined, () => {});
+    this.clouds = new THREE.Mesh(new THREE.SphereGeometry(1.009, 64, 64), new THREE.MeshPhongMaterial({ map: this.makeCloudFallback(), transparent: true, opacity: 0.13, depthWrite: false }));
+    this.planet.add(this.clouds);
+    loader.load(CLOUD_URL, texture => { texture.colorSpace = THREE.SRGBColorSpace; this.clouds.material.map = texture; this.clouds.material.opacity = 0.22; this.clouds.material.needsUpdate = true; }, undefined, () => {});
+    const atmosphere = new THREE.Mesh(new THREE.SphereGeometry(1.055, 64, 64), new THREE.ShaderMaterial({ vertexShader: "varying vec3 vNormal; void main(){vNormal=normalize(normalMatrix*normal);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}", fragmentShader: "varying vec3 vNormal; void main(){float intensity=pow(0.68-dot(vNormal,vec3(0.0,0.0,1.0)),2.2);gl_FragColor=vec4(0.12,0.52,1.0,1.0)*intensity*0.72;}", blending: THREE.AdditiveBlending, side: THREE.BackSide, transparent: true, depthWrite: false }));
+    this.planet.add(atmosphere);
+    const glow = new THREE.Mesh(new THREE.SphereGeometry(1.12, 48, 48), new THREE.MeshBasicMaterial({ color: 0x1675d1, transparent: true, opacity: 0.035, side: THREE.BackSide }));
+    this.planet.add(glow);
+  }
+  makeCloudFallback() {
+    const canvas=document.createElement("canvas"); canvas.width=512; canvas.height=256; const c=canvas.getContext("2d");
+    for(let i=0;i<900;i++){const x=Math.random()*512,y=Math.random()*256,r=2+Math.random()*10;c.fillStyle="rgba(255,255,255,"+(Math.random()*.09)+")";c.beginPath();c.ellipse(x,y,r*1.8,r,0,0,Math.PI*2);c.fill();}
+    return new THREE.CanvasTexture(canvas);
+  }
+  latLon(lat, lon, radius=1.018) {
+    const phi=(90-lat)*Math.PI/180, theta=(lon+180)*Math.PI/180;
+    return new THREE.Vector3(-radius*Math.sin(phi)*Math.cos(theta), radius*Math.cos(phi), radius*Math.sin(phi)*Math.sin(theta));
+  }
+  createMarkers() {
+    const markerGeometry = new THREE.SphereGeometry(0.018, 12, 12);
+    this.regions.forEach(region => {
+      const marker = new THREE.Mesh(markerGeometry, new THREE.MeshBasicMaterial({ color: region.color }));
+      marker.position.copy(this.latLon(region.lat, region.lon)); marker.userData.region = region; this.planet.add(marker); this.pickables.push(marker); this.markerMeshes.push(marker);
+      const ring = new THREE.Mesh(new THREE.RingGeometry(0.025,0.034,32), new THREE.MeshBasicMaterial({ color: region.color, transparent:true, opacity:.72, side:THREE.DoubleSide }));
+      ring.position.set(0,0,0); ring.lookAt(this.latLon(region.lat,region.lon).normalize()); marker.add(ring);
+    });
+  }
+  onPointer(event) {
+    const rect=this.renderer.domElement.getBoundingClientRect(); this.pointer.x=((event.clientX-rect.left)/rect.width)*2-1; this.pointer.y=-((event.clientY-rect.top)/rect.height)*2+1;
+    this.raycaster.setFromCamera(this.pointer,this.camera); const hits=this.raycaster.intersectObjects(this.pickables,false);
+    if(hits.length && this.callbacks.onRegion) this.callbacks.onRegion(hits[0].object.userData.region);
+  }
+  onResize() {
+    const width=Math.max(1,this.container.clientWidth),height=Math.max(1,this.container.clientHeight);
+    this.camera.aspect=width/height; this.camera.updateProjectionMatrix(); this.renderer.setSize(width,height,false);
+  }
+  setRotation(value) { this.rotationPreference=value; this.controls.autoRotate=value && !this.reducedMotion; }
+  setLabels(value) { this.labelsVisible=value; this.markerMeshes.forEach(m=>m.visible=value); }
+  setReducedMotion(value) { this.reducedMotion=value; this.controls.autoRotate=this.reducedMotion?false:this.rotationPreference; }
+  setQuality(high) { this.renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,high?1.7:1)); }
+  focusRegion(region) {
+    this.planet.updateMatrixWorld(true);
+    const point=this.latLon(region.lat,region.lon,1.02).normalize();
+    const worldPoint=point.applyMatrix4(this.planet.matrixWorld);
+    this.camera.position.copy(worldPoint.normalize().multiplyScalar(3.0)); this.controls.target.set(0,0,0); this.controls.update();
+  }
+  reset() { this.camera.position.set(0,0.25,4.25); this.controls.target.set(0,0,0); this.controls.update(); }
+  animate() {
+    if(!this.running) return;
+    requestAnimationFrame(this.animate);
+    const delta=Math.min(this.clock.getDelta(),0.05);
+    if(!this.reducedMotion) { this.clouds.rotation.y+=delta*0.006; this.stars.rotation.y+=delta*0.0015; }
+    this.controls.update(); this.renderer.render(this.scene,this.camera);
+  }
+  dispose() {
+    this.running=false; window.removeEventListener("resize",this.onResize); this.renderer.domElement.removeEventListener("pointerdown",this.onPointer);
+    this.controls.dispose(); this.scene.traverse(obj=>{obj.geometry?.dispose(); if(obj.material){(Array.isArray(obj.material)?obj.material:[obj.material]).forEach(m=>{m.map?.dispose();m.dispose();});}});
+    this.renderer.dispose(); this.renderer.domElement.remove();
+  }
+}
