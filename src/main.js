@@ -1,39 +1,40 @@
 import "./style.css";
 import { regions } from "./regions.js";
 import { PlanetWorld } from "./world.js";
+import { TemporalEngine } from "./temporal.js";
 
 const $ = selector => document.querySelector(selector);
-const app = $("#app");
-const toast = $("#toast");
 let world;
+let temporal;
 let rotationEnabled = true;
 let toastTimer;
 let startTime = Date.now();
 
 function showToast(message) {
-  toast.textContent = message; toast.classList.add("visible");
-  clearTimeout(toastTimer); toastTimer = setTimeout(() => toast.classList.remove("visible"), 2600);
+  const node = $("#toast");
+  node.textContent = message; node.classList.add("visible");
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => node.classList.remove("visible"), 2600);
 }
-function openModal(id) { const modal = document.getElementById(id); if (modal) modal.classList.remove("hidden"); }
-function closeModal(id) { const modal = document.getElementById(id); if (modal) modal.classList.add("hidden"); }
+function openModal(id) { document.getElementById(id)?.classList.remove("hidden"); }
+function closeModal(id) { document.getElementById(id)?.classList.add("hidden"); }
 function setView(view) {
   document.querySelectorAll(".rail-item").forEach(button => button.classList.toggle("active", button.dataset.view === view));
-  if (view === "orbital") { world.reset(); showToast("ORBITAL COMMAND // GLOBAL VIEW"); }
-  if (view === "surface") { showToast("SURFACE INTEL // SELECT A REGIONAL SIGNAL"); world.setRotation(false); }
-  if (view === "archive") { openModal("briefing-modal"); showToast("FIELD ARCHIVE // MISSION DOSSIER"); }
+  if (view === "orbital") { world?.reset(); world?.setRotation(rotationEnabled); showToast("ORBITAL COMMAND // TEMPORAL GLOBAL VIEW"); }
+  if (view === "surface") { showToast("SURFACE INTEL // SELECT A REGIONAL SIGNAL"); world?.setRotation(false); }
+  if (view === "archive") { openModal("briefing-modal"); showToast("FIELD ARCHIVE // TEMPORAL MISSION DOSSIER"); }
 }
 function selectRegion(region) {
   $("#region-title").textContent = region.name.toUpperCase();
   $("#region-biome").textContent = region.biome;
   $("#region-status").textContent = region.status;
   $("#region-index").textContent = region.index;
-  $("#region-description").textContent = region.description;
-  world.focusRegion(region); openModal("region-modal");
+  $("#region-description").textContent = `${region.description} Current simulation era: ${temporal?.current.year ?? 2026}. Regional conditions are represented as gameplay data.`;
+  world?.focusRegion(region); openModal("region-modal");
 }
 function renderRegions() {
-  $("#region-list").innerHTML = regions.map(region => `<button class="region-row" data-region="${region.id}"><span class="region-dot" style="--signal:${region.color.toString(16).padStart(6,"0")}"></span><span class="region-row-name">${region.short}<small>${region.status}</small></span><b>${region.value}<small>%</small></b><span class="row-arrow">↗</span></button>`).join("");
+  $("#region-list").innerHTML = regions.map(region => `<button class="region-row" data-region="${region.id}"><span class="region-dot" style="--signal:#${region.color.toString(16).padStart(6,"0")}"></span><span class="region-row-name">${region.short}<small>${region.status}</small></span><b>${region.value}<small>%</small></b><span class="row-arrow">↗</span></button>`).join("");
   document.querySelectorAll(".region-row").forEach(button => button.addEventListener("click", () => {
-    const region = regions.find(item => item.id === button.dataset.region); if(region) selectRegion(region);
+    const region = regions.find(item => item.id === button.dataset.region); if (region) selectRegion(region);
   }));
 }
 function initializeWorld() {
@@ -43,46 +44,94 @@ function initializeWorld() {
   } catch (error) {
     console.error("3D world initialization failed:", error);
     $("#world-root").classList.add("world-fallback");
-    showToast("3D renderer unavailable — interface remains active");
+    showToast("3D renderer unavailable — temporal interface remains active");
   }
 }
 function setRotation(value) {
-  rotationEnabled = value; $("#rotation-toggle").classList.toggle("rotation-active", value);
-  if(world) world.setRotation(value);
-  $("#setting-rotation").checked = value;
+  rotationEnabled = value; $("#rotation-toggle")?.classList.toggle("rotation-active", value);
+  world?.setRotation(value); const setting = $("#setting-rotation"); if (setting) setting.checked = value;
 }
 function updateElapsed() {
-  const seconds = Math.floor((Date.now()-startTime)/1000);
-  const hh=String(Math.floor(seconds/3600)).padStart(2,"0"),mm=String(Math.floor(seconds%3600/60)).padStart(2,"0"),ss=String(seconds%60).padStart(2,"0");
+  const seconds = Math.floor((Date.now() - startTime) / 1000);
+  const hh = String(Math.floor(seconds / 3600)).padStart(2,"0"), mm = String(Math.floor(seconds % 3600 / 60)).padStart(2,"0"), ss = String(seconds % 60).padStart(2,"0");
   $("#elapsed").textContent = `${hh}:${mm}:${ss}`;
 }
+function format(value, digits = 1) { return Number(value).toFixed(digits); }
+function updateTemporalView(state) {
+  const era = state.current;
+  $("#temporal-year").textContent = era.year;
+  $("#temporal-label").textContent = era.label;
+  $("#era-title").textContent = era.year;
+  $("#era-subtitle").textContent = era.subtitle;
+  $("#panel-year-code").textContent = `EC / ${String(era.year).slice(-2)}`;
+  $("#metric-biome").innerHTML = `${format(era.biome)}<small>%</small>`;
+  $("#metric-ocean").innerHTML = `${format(era.ocean)}<small>%</small>`;
+  $("#metric-restoration").innerHTML = `${era.restoration}<small class="unit"> ACTIVE</small>`;
+  $("#metric-readiness").innerHTML = `${era.readiness}<small>%</small>`;
+  $("#meter-biome").style.width = `${era.biome}%`;
+  $("#meter-ocean").style.width = `${era.ocean}%`;
+  $("#meter-restoration").style.width = `${Math.min(100, era.restoration)}%`;
+  $("#meter-readiness").style.width = `${era.readiness}%`;
+  $("#stat-forest").textContent = `${format(era.forest)}%`;
+  $("#stat-water").textContent = `${era.water}%`;
+  $("#stat-energy").textContent = `${era.energy}%`;
+  $("#stat-resilience").textContent = `${era.readiness}%`;
+  $("#stat-population").textContent = `${format(era.population)}B`;
+  $("#timeline-slider").value = state.progress;
+  $("#timeline-progress").style.width = `${state.progress * 100}%`;
+  $("#temporal-play").textContent = state.playing ? "Ⅱ" : "▶";
+  $("#temporal-compare").classList.toggle("active", state.compare);
+  $("#temporal-events").innerHTML = era.events.map(([id,title,description]) => `<article class="event-card"><span>${id}</span><div><b>${title}</b><p>${description}</p></div></article>`).join("");
+  document.querySelectorAll(".timeline-years button").forEach(button => button.classList.toggle("active", Number(button.dataset.year) === era.year));
+  world?.setTemporalState?.(era);
+  if (state.compare) updateComparison();
+}
+function updateComparison() {
+  const data = temporal.comparison();
+  $("#compare-base").textContent = `${format(data.baseline.biome)}%`;
+  $("#compare-target").textContent = `${format(data.current.biome)}%`;
+  $("#compare-current-year").textContent = `${data.current.year} / ${data.current.label}`;
+  const delta = data.current.biome - data.baseline.biome;
+  $("#comparison-deltas").innerHTML = `<div><span>BIOME</span><b>+${format(delta)} pts</b></div><div><span>RESTORATION ZONES</span><b>+${data.current.restoration - data.baseline.restoration}</b></div><div><span>READINESS</span><b>+${data.current.readiness - data.baseline.readiness} pts</b></div>`;
+  $("#comparison-panel").classList.remove("hidden");
+}
+function initializeTemporal() {
+  temporal = new TemporalEngine({
+    onChange: updateTemporalView,
+    onEvent: event => showToast(`TEMPORAL EVENT // ${event[1]}`)
+  });
+  $("#timeline-slider").addEventListener("input", event => temporal.setProgress(event.target.value));
+  $("#temporal-play").addEventListener("click", () => temporal.togglePlayback());
+  $("#temporal-compare").addEventListener("click", () => { temporal.toggleCompare(); if (!temporal.compare) $("#comparison-panel").classList.add("hidden"); });
+  document.querySelectorAll(".timeline-years button").forEach(button => button.addEventListener("click", () => temporal.setYear(button.dataset.year)));
+  $("#comparison-panel").querySelector("[data-close-temporal]")?.addEventListener("click", () => { temporal.compare = false; temporal.emit(); $("#comparison-panel").classList.add("hidden"); });
+}
 function init() {
-  renderRegions(); initializeWorld();
-  document.querySelectorAll(".rail-item").forEach(button => button.addEventListener("click",()=>setView(button.dataset.view)));
-  $("#settings-open").addEventListener("click",()=>openModal("settings-modal"));
-  $("#briefing-button").addEventListener("click",()=>openModal("briefing-modal"));
-  $("#launch-button").addEventListener("click",()=>{ closeModal("intro-overlay"); showToast("PLANETARY COMMAND INITIALIZED"); });
-  $("#begin-button").addEventListener("click",()=>{ closeModal("intro-overlay"); showToast("WELCOME, RESTORATION ARCHITECT"); });
-  $("#zoom-in").addEventListener("click",()=>{ if(world){world.camera.position.multiplyScalar(.86);world.controls.update();} });
-  $("#zoom-out").addEventListener("click",()=>{ if(world){world.camera.position.multiplyScalar(1.16);world.controls.update();} });
-  $("#reset-view").addEventListener("click",()=>world?.reset());
-  $("#rotation-toggle").addEventListener("click",()=>setRotation(!rotationEnabled));
-  $("#setting-rotation").addEventListener("change",event=>setRotation(event.target.checked));
-  $("#setting-labels").addEventListener("change",event=>world?.setLabels(event.target.checked));
-  $("#setting-motion").addEventListener("change",event=>world?.setReducedMotion(event.target.checked));
-  $("#setting-quality").addEventListener("change",event=>world?.setQuality(event.target.checked));
-  document.querySelectorAll("[data-close]").forEach(button=>button.addEventListener("click",()=>closeModal(button.dataset.close)));
-  document.querySelectorAll(".modal-backdrop").forEach(backdrop=>backdrop.addEventListener("pointerdown",event=>{if(event.target===backdrop)closeModal(backdrop.id);}));
-  document.addEventListener("keydown",event=>{if(event.key==="Escape")document.querySelectorAll(".modal-backdrop").forEach(modal=>modal.classList.add("hidden"));});
-  setInterval(updateElapsed,1000); updateElapsed();
-  $("#coordinates").textContent="LAT 00.00° / LNG 00.00°";
+  renderRegions(); initializeWorld(); initializeTemporal();
+  document.querySelectorAll(".rail-item").forEach(button => button.addEventListener("click", () => setView(button.dataset.view)));
+  $("#settings-open").addEventListener("click", () => openModal("settings-modal"));
+  $("#briefing-button").addEventListener("click", () => openModal("briefing-modal"));
+  $("#launch-button").addEventListener("click", () => { closeModal("intro-overlay"); showToast("PLANETARY COMMAND INITIALIZED // TEMPORAL CORE READY"); });
+  $("#begin-button").addEventListener("click", () => { closeModal("intro-overlay"); showToast("WELCOME, RESTORATION ARCHITECT // 2026 BASELINE LOCKED"); });
+  $("#zoom-in").addEventListener("click", () => { if (world) { world.camera.position.multiplyScalar(.86); world.controls.update(); } });
+  $("#zoom-out").addEventListener("click", () => { if (world) { world.camera.position.multiplyScalar(1.16); world.controls.update(); } });
+  $("#reset-view").addEventListener("click", () => world?.reset());
+  $("#rotation-toggle").addEventListener("click", () => setRotation(!rotationEnabled));
+  $("#setting-rotation").addEventListener("change", event => setRotation(event.target.checked));
+  $("#setting-labels").addEventListener("change", event => world?.setLabels(event.target.checked));
+  $("#setting-motion").addEventListener("change", event => world?.setReducedMotion(event.target.checked));
+  $("#setting-quality").addEventListener("change", event => world?.setQuality(event.target.checked));
+  document.querySelectorAll("[data-close]").forEach(button => button.addEventListener("click", () => closeModal(button.dataset.close)));
+  document.querySelectorAll(".modal-backdrop").forEach(backdrop => backdrop.addEventListener("pointerdown", event => { if (event.target === backdrop) closeModal(backdrop.id); }));
+  document.addEventListener("keydown", event => { if (event.key === "Escape") document.querySelectorAll(".modal-backdrop").forEach(modal => modal.classList.add("hidden")); });
+  setInterval(updateElapsed, 1000); updateElapsed();
+  $("#coordinates").textContent = "LAT 00.00° / LNG 00.00°";
   $("#intro-overlay").classList.remove("hidden");
-  $("#world-root").addEventListener("pointermove",event=>{
-    if(!world || event.buttons) return;
-    const rect=$("#world-root").getBoundingClientRect(); const x=((event.clientX-rect.left)/rect.width-.5)*360; const y=((event.clientY-rect.top)/rect.height)*180-90;
-    $("#coordinates").textContent=`LAT ${Math.abs(y).toFixed(2)}° ${y>=0?"N":"S"} / LNG ${Math.abs(x).toFixed(2)}° ${x>=0?"E":"W"}`;
+  $("#world-root").addEventListener("pointermove", event => {
+    if (!world || event.buttons) return;
+    const rect = $("#world-root").getBoundingClientRect(); const x = ((event.clientX - rect.left) / rect.width - .5) * 360; const y = ((event.clientY - rect.top) / rect.height) * 180 - 90;
+    $("#coordinates").textContent = `LAT ${Math.abs(y).toFixed(2)}° ${y >= 0 ? "N" : "S"} / LNG ${Math.abs(x).toFixed(2)}° ${x >= 0 ? "E" : "W"}`;
   });
 }
 init();
-
-window.addEventListener("beforeunload",()=>world?.dispose());
+window.addEventListener("beforeunload", () => { temporal?.dispose(); world?.dispose(); });
