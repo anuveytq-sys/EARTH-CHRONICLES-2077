@@ -24,6 +24,46 @@ export class PlanetWorld {
   setTemporalState(state){this.temporalState=state;const progress=Math.max(0,Math.min(1,(state.year-2026)/(2077-2026)));const biome=state.biome??68;const color=new THREE.Color();color.setHSL(.55-.12*progress,.72,.52);if(this.earth){this.earth.material.color.lerp(color,.18);this.earth.material.needsUpdate=true;}if(this.atmosphere?.material?.uniforms?.glowColor)this.atmosphere.material.uniforms.glowColor.value.lerp(new THREE.Color(progress>.6?0x48e0b0:0x1f86ff),.12);if(this.clouds)this.clouds.material.opacity=.18+.08*progress;this.glow?.material&&(this.glow.material.opacity=.035+.018*progress);}
   setRestorationState(state){this.restorationState=state;this.drawRestorationSurface(state);const map={amazon:state.forest,southasia:Math.max(state.wetlands,state.urban),sahara:state.drylands,arctic:state.rewilding,coral:state.coastal};this.markerMeshes.forEach(marker=>{const region=marker.userData.region;const level=map[region.id]??0;const color=new THREE.Color(region.color);color.lerp(new THREE.Color(0x69f0a7),level/120);marker.material.color.copy(color);const scale=1+level/90;marker.scale.setScalar(scale);const ring=marker.children[0];if(ring){ring.material.color.copy(color);ring.material.opacity=.35+level/150;ring.scale.setScalar(1+level/80);}});const momentum=state.metrics?.momentum??0;if(this.atmosphere?.material?.uniforms?.glowColor)this.atmosphere.material.uniforms.glowColor.value.set(0x1f86ff).lerp(new THREE.Color(0x42dca1),momentum/100);if(this.glow?.material)this.glow.material.opacity=.035+momentum/900;}
   setDecisionState(state){this.decisionState=state;const s=state.scores||{};const blend={...(this.restorationState||{forest:0,wetlands:0,drylands:0,rewilding:0,coastal:0,urban:0})};blend.forest=Math.max(blend.forest,Math.round((s.biodiversity||0)*.82));blend.wetlands=Math.max(blend.wetlands,Math.round((s.water||0)*.78));blend.drylands=Math.max(blend.drylands,Math.round((s.biome||0)*.64));blend.rewilding=Math.max(blend.rewilding,Math.round((s.biodiversity||0)*.76));blend.coastal=Math.max(blend.coastal,Math.round((s.climate||0)*.68));blend.urban=Math.max(blend.urban,Math.round((s.livelihood||0)*.7));blend.metrics={momentum:state.score||0};this.drawRestorationSurface(blend);const regional={amazon:blend.forest,arctic:blend.rewilding,sahara:blend.drylands,southasia:Math.max(blend.wetlands,blend.urban),coral:blend.coastal};this.markerMeshes.forEach(marker=>{const level=regional[marker.userData.region.id]||0;const color=new THREE.Color(marker.userData.baseColor);color.lerp(new THREE.Color(0x72e6a5),level/125);marker.material.color.copy(color);marker.scale.setScalar(1+level/150);});if(this.atmosphere?.material?.uniforms?.glowColor)this.atmosphere.material.uniforms.glowColor.value.set(0x1f86ff).lerp(new THREE.Color(0x42dca1),(state.score||0)/130);}
+  setExperienceState(state){
+    this.experienceState=state;
+    const p=state?.pillars||{};
+    const env=THREE.MathUtils.clamp(Number(p.environment??50),0,100);
+    const water=THREE.MathUtils.clamp(Number(p.water??50),0,100);
+    const bio=THREE.MathUtils.clamp(Number(p.biodiversity??50),0,100);
+    const people=THREE.MathUtils.clamp(Number(p.people??50),0,100);
+    const climate=THREE.MathUtils.clamp(Number(p.climate??50),0,100);
+    const blend={...(this.restorationState||{forest:0,wetlands:0,drylands:0,rewilding:0,coastal:0,urban:0})};
+    blend.forest=Math.max(blend.forest||0,bio*.82,env*.55);
+    blend.wetlands=Math.max(blend.wetlands||0,water*.86);
+    blend.drylands=Math.max(blend.drylands||0,climate*.62);
+    blend.rewilding=Math.max(blend.rewilding||0,bio*.78);
+    blend.coastal=Math.max(blend.coastal||0,Math.max(water,climate)*.68);
+    blend.urban=Math.max(blend.urban||0,people*.72);
+    blend.metrics={...(blend.metrics||{}),momentum:Math.round((env+water+bio+people+climate)/5)};
+    this.drawRestorationSurface(blend);
+    const regional={amazon:blend.forest,arctic:blend.rewilding,sahara:blend.drylands,southasia:Math.max(blend.wetlands,blend.urban),coral:blend.coastal};
+    this.markerMeshes.forEach(marker=>{
+      const level=regional[marker.userData.region.id]||0;
+      const color=new THREE.Color(marker.userData.baseColor).lerp(new THREE.Color(0x66e6a5),level/125);
+      marker.material.color.copy(color);
+      marker.scale.setScalar(1+level/180);
+      const ring=marker.children[0];if(ring){ring.material.color.copy(color);ring.material.opacity=.3+level/180;}
+    });
+    const avg=(env+water+bio+people+climate)/5;
+    const tint=new THREE.Color().setHSL(.52-(climate/100)*.08,.58,.48+(avg/100)*.08);
+    if(this.atmosphere?.material?.uniforms?.glowColor)this.atmosphere.material.uniforms.glowColor.value.copy(tint);
+    if(this.glow?.material)this.glow.material.color.copy(tint).multiplyScalar(1.15),this.glow.material.opacity=.025+avg/1800;
+    if(this.clouds)this.clouds.material.opacity=.12+water/100*.16;
+    if(this.earth?.material)this.earth.material.color.setRGB(1, .94+env/1800, .92+climate/2200);
+  }
+  setAuditVisual(mode="recovery"){
+    const palettes={recovery:0x55e6a8,stress:0xff9b55,baseline:0x398bdb};
+    const color=new THREE.Color(palettes[mode]||palettes.baseline);
+    if(this.atmosphere?.material?.uniforms?.glowColor)this.atmosphere.material.uniforms.glowColor.value.copy(color);
+    if(this.glow?.material){this.glow.material.color.copy(color);this.glow.material.opacity=mode==="baseline"?.035:.075;}
+    if(this.clouds)this.clouds.material.opacity=mode==="stress"?.28:.18;
+    this.auditVisualMode=mode;
+  }
   focusRegion(region){this.planet.updateMatrixWorld(true);const point=this.latLon(region.lat,region.lon,1.02).normalize();const worldPoint=point.applyMatrix4(this.planet.matrixWorld);this.camera.position.copy(worldPoint.normalize().multiplyScalar(3));this.controls.target.set(0,0,0);this.controls.update();}
   reset(){this.camera.position.set(0,.25,4.25);this.controls.target.set(0,0,0);this.controls.update();}
   animate(){if(!this.running)return;requestAnimationFrame(this.animate);const delta=Math.min(this.clock.getDelta(),.05);if(!this.reducedMotion){this.clouds.rotation.y+=delta*.006;this.stars.rotation.y+=delta*.0015;}this.controls.update();this.renderer.render(this.scene,this.camera);}
