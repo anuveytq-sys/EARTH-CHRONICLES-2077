@@ -72,3 +72,116 @@ html,body,#app{height:100%;height:100dvh;min-height:0}
   .bottom-hud{bottom:5px}
 }
 @media(prefers-reduced-motion:reduce){.right-panel{scroll-behavior:auto}}
+
+
+/* LANDSCAPE GAME LAYOUT — preserve circular geometry and compact every HUD surface */
+html,body,#app{width:100%;height:100%;height:100dvh;min-height:0;overflow:hidden}
+#world-root{inset:0;overflow:hidden}
+#world-root canvas{display:block;width:100%!important;height:100%!important;max-width:none;max-height:none;object-fit:contain}
+.interface{min-width:0;min-height:0}
+.right-panel,.modal-card{overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:rgba(113,231,242,.42) transparent;touch-action:pan-x pan-y}
+.right-panel::-webkit-scrollbar,.modal-card::-webkit-scrollbar{width:4px;height:4px}
+.right-panel::-webkit-scrollbar-thumb,.modal-card::-webkit-scrollbar-thumb{background:rgba(113,231,242,.4);border-radius:8px}
+.right-panel{max-width:calc(100vw - 24px);max-height:calc(100dvh - 110px)}
+.modal-backdrop{overflow:auto;overscroll-behavior:contain}
+.modal-card{max-width:min(490px,calc(100vw - 24px));max-height:calc(100dvh - 24px)}
+.landscape-prompt{display:none}
+@media(orientation:landscape) and (max-height:560px){
+  .topbar{height:43px;padding:0 15px}
+  .brand{gap:8px}
+  .brand-mark{width:24px;height:24px}
+  .brand-mark i{height:10px}
+  .brand-mark i:nth-child(2){height:15px}
+  .brand strong{font-size:14px;letter-spacing:1.6px}
+  .brand small{font-size:6px;letter-spacing:1px}
+  .top-status{font-size:6px;letter-spacing:1px}
+  .icon-button{width:29px;height:29px;font-size:15px}
+  .interface{inset:43px 0 0}
+  .left-rail{left:7px;top:12px;bottom:12px;width:64px;display:flex;flex-direction:column;border-right:1px solid var(--line);border-bottom:0;justify-content:flex-start}
+  .rail-label{display:block;height:auto;writing-mode:initial;transform:none;font-size:6px;margin:0 0 8px 4px}
+  .rail-item{height:48px;width:58px;min-width:0;flex:none;display:flex;flex-direction:column;justify-content:center;gap:1px;padding:3px;border-left:2px solid transparent;border-bottom:0}
+  .rail-item .rail-icon{font-size:14px;width:auto}
+  .rail-item span:nth-child(2){font-size:5px;line-height:1.2;text-align:center}
+  .rail-item em{display:none}
+  .rail-bottom{display:none}
+  .hero-copy{left:82px;top:18%;width:25vw;max-width:245px}
+  .hero-copy .eyebrow{font-size:6px;letter-spacing:1px;gap:5px;white-space:normal}
+  .hero-copy .eyebrow-line{width:14px;flex:none}
+  .hero-copy .hero-desc{font-size:8px;line-height:1.45;max-width:220px;margin:8px 0 10px}
+  .hero-copy .hero-footnote{font-size:6px;margin-top:9px;letter-spacing:.6px}
+  .hero-actions{gap:7px}
+  .primary-button{min-height:30px;padding:0 9px;font-size:6px;letter-spacing:.6px;gap:8px}
+  .primary-button b{font-size:12px}
+  .text-button{font-size:6px;letter-spacing:.5px}
+  .text-button span{font-size:11px}
+  .right-panel{left:auto;right:12px;top:12px;bottom:38px;width:clamp(185px,25vw,225px);max-width:calc(100vw - 100px);max-height:calc(100% - 50px);padding:9px 10px 8px;background:rgba(5,17,30,.74);backdrop-filter:blur(8px);box-shadow:0 8px 22px rgba(0,0,0,.2)}
+  .panel-heading,.region-heading{font-size:6px;letter-spacing:.8px}
+  .planet-name{padding:7px 0 6px}
+  .planet-name small{font-size:6px;letter-spacing:.7px}
+  .planet-name h2{font-size:22px;letter-spacing:2px;margin:2px 0}
+  .planet-coord{font-size:6px}
+  .metric-grid{gap:8px 9px;padding:8px 0}
+  .metric>span{font-size:5.5px;letter-spacing:0}
+  .metric strong{font-size:17px;margin-top:2px}
+  .metric strong small{font-size:8px}
+  .meter{margin-top:4px;height:2px}
+  .region-heading{padding:8px 0 5px}
+  .region-heading small{font-size:5px}
+  .region-row{gap:5px;padding:5px 1px}
+  .region-dot{width:5px;height:5px}
+  .region-row-name{font-size:6px;letter-spacing:0}
+  .region-row-name small{font-size:5px;margin-top:2px}
+  .region-row>b{font-size:11px}
+  .region-row>b small{font-size:6px}
+  .row-arrow{font-size:9px}
+  .panel-footer{font-size:5px;gap:4px;margin-top:7px;letter-spacing:.2px}
+  .globe-controls{right:calc(clamp(185px,25vw,225px) + 20px);left:auto;top:auto;bottom:45px;display:flex;flex-direction:column;gap:4px}
+  .globe-controls button{width:24px;height:24px;font-size:13px}
+  .bottom-hud{left:82px;right:calc(clamp(185px,25vw,225px) + 20px);bottom:8px;padding-top:5px}
+  .hud-coordinate small,.hud-time small{font-size:5px;letter-spacing:.6px}
+  .hud-coordinate strong,.hud-time strong{font-size:6px;margin-top:3px}
+  .hud-center{font-size:5px;gap:5px;letter-spacing:.5px}
+  .hud-line{width:16px}
+  .toast{bottom:8px;font-size:6px;padding:7px 10px}
+  .intro-card{width:min(430px,72vw);padding:18px 22px}
+  .intro-emblem{width:35px;height:35px;margin-bottom:8px;font-size:10px}
+  .intro-card h2{font-size:26px;margin:8px 0}
+  .intro-card p{font-size:9px;line-height:1.5;margin-bottom:10px}
+  .intro-card .primary-button{min-width:170px}
+  .intro-version{margin-top:9px;font-size:6px}
+  .modal-backdrop{padding:8px}
+  .modal-card{padding:13px;width:min(430px,70vw);max-height:calc(100dvh - 16px)}
+  .modal-head{padding-bottom:9px}
+  .modal-head h2{font-size:22px}
+  .modal-head small{font-size:6px}
+  .close-button{width:27px;height:27px;font-size:17px}
+  .setting-row{padding:8px 0}
+  .setting-row b{font-size:9px}
+  .setting-row small{font-size:7px}
+  .modal-note{font-size:6px}
+  .briefing-lead{font-size:9px;margin:10px 0}
+  .briefing-grid{gap:6px;margin:10px 0}
+  .briefing-grid>div{padding:8px}
+  .briefing-grid span{font-size:6px}
+  .briefing-grid b{font-size:11px;margin:5px 0}
+  .briefing-grid p{font-size:7px}
+  .region-detail-grid{gap:6px;margin:10px 0}
+  .region-detail-grid>div{padding:8px}
+  .region-detail-grid small{font-size:6px}
+  .region-detail-grid b{font-size:8px;margin-top:5px}
+  .region-description{font-size:8px}
+  .region-detail-foot{font-size:6px}
+}
+@media(orientation:portrait) and (max-width:800px){
+  .landscape-prompt{position:absolute;z-index:100;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:13px;padding:28px;text-align:center;background:radial-gradient(ellipse at center,#10283c,#030811 75%);color:#eaf4ff}
+  .landscape-prompt strong{font:700 18px "DM Mono",monospace;letter-spacing:2px;color:var(--cyan)}
+  .landscape-prompt span{max-width:270px;font:10px/1.7 "DM Mono",monospace;color:#9bb1c5}
+  .rotate-device{font-size:54px;color:var(--cyan);transform:rotate(-90deg);line-height:1}
+}
+@media(orientation:landscape) and (max-height:390px){
+  .hero-copy{top:14%}
+  .hero-copy .hero-desc{max-height:54px;overflow:auto}
+  .right-panel{bottom:32px;max-height:calc(100% - 42px)}
+  .bottom-hud{bottom:5px}
+  .globe-controls{bottom:36px}
+}
