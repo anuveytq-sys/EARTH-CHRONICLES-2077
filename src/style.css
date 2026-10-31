@@ -172,16 +172,53 @@ html,body,#app{width:100%;height:100%;height:100dvh;min-height:0;overflow:hidden
   .region-description{font-size:8px}
   .region-detail-foot{font-size:6px}
 }
-@media(orientation:portrait) and (max-width:800px){
-  .landscape-prompt{position:absolute;z-index:100;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:13px;padding:28px;text-align:center;background:radial-gradient(ellipse at center,#10283c,#030811 75%);color:#eaf4ff}
-  .landscape-prompt strong{font:700 18px "DM Mono",monospace;letter-spacing:2px;color:var(--cyan)}
-  .landscape-prompt span{max-width:270px;font:10px/1.7 "DM Mono",monospace;color:#9bb1c5}
-  .rotate-device{font-size:54px;color:var(--cyan);transform:rotate(-90deg);line-height:1}
-}
 @media(orientation:landscape) and (max-height:390px){
   .hero-copy{top:14%}
   .hero-copy .hero-desc{max-height:54px;overflow:auto}
   .right-panel{bottom:32px;max-height:calc(100% - 42px)}
   .bottom-hud{bottom:5px}
   .globe-controls{bottom:36px}
+}
+
+/* Do not block the game behind an orientation instruction: mobile browsers cannot be forced to rotate. */
+.landscape-prompt{display:none!important;pointer-events:none!important}
+@media(orientation:portrait) and (max-width:800px){
+  .topbar{height:54px;padding:0 12px}
+  .brand strong{font-size:14px;letter-spacing:1.4px}
+  .brand small{font-size:6px}
+  .brand-mark{width:25px;height:25px}
+  .top-status{display:none}
+  .interface{inset:54px 0 0}
+  .left-rail{top:7px;left:8px;right:8px;bottom:auto;width:auto;height:42px;display:flex;flex-direction:row;align-items:center;border:1px solid var(--line);background:rgba(4,14,25,.7)}
+  .rail-label,.rail-bottom{display:none}
+  .rail-item{height:40px;width:auto;min-width:0;flex:1;justify-content:center;gap:4px;padding:3px;border-left:0;border-bottom:2px solid transparent}
+  .rail-item.active{border-left:0;border-bottom-color:var(--cyan)}
+  .rail-icon{font-size:13px;width:auto}
+  .rail-item span:nth-child(2){font-size:5px;line-height:1.2}
+  .rail-item em{display:none}
+  .hero-copy{left:14px;right:14px;top:61px;width:auto;max-width:55%;z-index:2}
+  .hero-copy .eyebrow{font-size:6px;letter-spacing:.8px;gap:4px}
+  .hero-copy .eyebrow-line{width:12px}
+  .hero-desc,.hero-footnote{display:none}
+  .hero-actions{margin-top:8px}
+  .primary-button{min-height:29px;padding:0 8px;font-size:6px;gap:7px}
+  .primary-button b{font-size:11px}
+  .right-panel{left:auto;right:8px;top:112px;bottom:44px;width:min(44vw,190px);max-width:calc(100vw - 24px);max-height:none;padding:8px;background:rgba(5,17,30,.8);overflow:auto;touch-action:pan-x pan-y}
+  .planet-name{padding:6px 0}
+  .planet-name h2{font-size:20px}
+  .metric-grid{gap:7px 5px;padding:7px 0}
+  .metric>span{font-size:5px;white-space:normal}
+  .metric strong{font-size:15px}
+  .region-heading{padding:7px 0 5px}
+  .region-row{padding:5px 0;gap:4px}
+  .region-row-name{font-size:5px}
+  .region-row-name small{font-size:4.5px}
+  .globe-controls{right:calc(min(44vw,190px) + 13px);top:auto;bottom:50px;display:flex;flex-direction:column;gap:3px}
+  .globe-controls button{width:22px;height:22px;font-size:12px}
+  .bottom-hud{left:10px;right:calc(min(44vw,190px) + 13px);bottom:7px;padding-top:5px}
+  .hud-coordinate small,.hud-time small{font-size:5px}
+  .hud-coordinate strong,.hud-time strong{font-size:5px}
+  .hud-center{display:none}
+  .modal-backdrop{padding:8px;overflow:auto}
+  .modal-card{width:min(430px,calc(100vw - 16px));max-height:calc(100dvh - 16px);overflow:auto}
 }
