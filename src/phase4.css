@@ -1,0 +1,45 @@
+/* Phase 4 — Decision & Consequence Intelligence */
+.phase4-backdrop{z-index:24;overflow:auto;align-items:center;padding:16px}
+.phase4-card{width:min(1120px,97vw);max-height:92vh;overflow:auto;padding:clamp(14px,2vw,24px);scrollbar-width:thin}
+.p4-intro{color:#91aabd;font-size:11px;line-height:1.65;margin:12px 0}
+.p4-top{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0}
+.p4-top>div,.p4-box,.p4-objective{background:rgba(8,25,40,.7);border:1px solid rgba(133,184,220,.16);padding:12px}
+.p4-top small,.p4-box>small,.p4-objective small{display:block;color:#7190a7;font:7px "DM Mono",monospace;letter-spacing:.8px}
+.p4-top strong{display:block;color:#71e7f2;font:700 25px "Barlow Condensed",sans-serif;margin-top:4px}
+.p4-progress{height:3px;background:#173247;margin-bottom:14px}.p4-progress i{display:block;height:100%;width:0;background:#71e7f2;transition:width .25s}
+.p4-main{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(250px,.75fr);gap:12px}
+.p4-challenge{border:1px solid rgba(133,184,220,.16);padding:14px;background:rgba(5,19,32,.65);min-width:0}
+.p4-region{color:#71e7f2;font:8px "DM Mono",monospace;letter-spacing:1px}
+.p4-challenge h3{color:#e8f5fc;font:700 25px "Barlow Condensed",sans-serif;margin:7px 0}
+.p4-challenge>p{color:#91aabd;font-size:10px;line-height:1.6}
+.p4-objective{margin:12px 0}.p4-objective b{display:block;color:#e2f1fa;font-size:10px;margin-top:5px}
+.p4-options{display:grid;gap:7px}
+.p4-choice{width:100%;display:flex;justify-content:space-between;gap:10px;text-align:left;padding:11px;border:1px solid rgba(133,184,220,.17);background:rgba(9,30,47,.78);color:#d9eaf4;cursor:pointer}
+.p4-choice.selected{border-color:#71e7f2;background:rgba(32,111,132,.22)}
+.p4-choice:disabled{opacity:.65;cursor:default}
+.p4-choice small{display:block;color:#71e7f2;font:7px "DM Mono",monospace}
+.p4-choice b{display:block;font-size:10px;margin:5px 0}
+.p4-choice em{display:block;color:#8199ad;font-style:normal;font-size:9px;line-height:1.45}
+.p4-choice>i{font-style:normal;color:#71e7f2}
+.p4-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+.p4-actions button,.p4-footer button{border:1px solid rgba(113,231,242,.25);background:rgba(7,25,42,.8);color:#9cb6c7;padding:10px;font:8px "DM Mono",monospace;cursor:pointer}
+.p4-actions .p4-primary{background:linear-gradient(100deg,#237d94,#155a80);color:#f1fdff;border-color:#71e7f2}
+.p4-actions button:disabled{opacity:.35;cursor:not-allowed}
+.p4-feedback{font:8px "DM Mono",monospace;color:#71e7f2;margin-top:10px;line-height:1.5}
+.p4-intel{display:flex;flex-direction:column;gap:9px;min-width:0}
+.p4-pillar{display:grid;grid-template-columns:1fr auto;gap:5px;margin-top:12px;align-items:center}
+.p4-pillar span,.p4-consequences span,.p4-alternatives span{color:#9ab0bf;font:7px "DM Mono",monospace}
+.p4-pillar b{color:#e5f5ff;font:16px "Barlow Condensed",sans-serif}
+.p4-pillar>i{grid-column:1/-1;height:3px;background:#183348}.p4-pillar>i em{display:block;height:100%;background:linear-gradient(90deg,#2b8db2,#71e7f2)}
+.p4-consequences>div,.p4-alternatives>div{display:flex;justify-content:space-between;gap:8px;margin-top:9px}
+.p4-consequences b,.p4-alternatives b{font:13px "DM Mono",monospace}.positive{color:#74e3a5}.negative{color:#ff9a85}
+.p4-consequences p,.p4-note{color:#7892a7;font-size:9px;line-height:1.5}
+.p4-box select{width:100%;margin-top:9px;background:#0a2033;color:#d9eaf4;border:1px solid #31546b;padding:9px;font:9px "DM Mono",monospace}
+.p4-lower{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.p4-ledger article{padding:8px 0;border-bottom:1px solid rgba(133,184,220,.12)}
+.p4-ledger article small{display:block;color:#71e7f2;font:7px "DM Mono",monospace}
+.p4-ledger article b{display:block;color:#dcecf5;font-size:9px;margin:4px 0}
+.p4-ledger article span{color:#8199ad;font-size:8px}
+.p4-footer{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px;padding-top:10px;border-top:1px solid rgba(133,184,220,.15)}
+.p4-footer>span{margin-right:auto;color:#718ba1;font:7px "DM Mono",monospace}
+@media(max-width:760px){.phase4-card{max-height:94vh}.p4-main{grid-template-columns:1fr}.p4-lower{grid-template-columns:1fr}.p4-top strong{font-size:20px}}
