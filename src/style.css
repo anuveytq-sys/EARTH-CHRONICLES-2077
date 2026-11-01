@@ -269,3 +269,50 @@ html,body,#app{width:100%;height:100%;height:100dvh;min-height:0;overflow:hidden
  .brand small{font-size:5px}
  .rail-item{flex-basis:82px!important;min-width:82px!important;width:82px!important}
 }
+
+/* Mobile panel launcher buttons: panels stay hidden until explicitly requested. */
+@media(max-width:800px){
+ .left-rail{gap:3px;overflow-x:auto;overflow-y:hidden;justify-content:flex-start;scroll-snap-type:x proximity;padding:3px 5px}
+ .left-rail .rail-item{flex:0 0 86px!important;min-width:86px!important;width:86px!important;scroll-snap-align:start}
+ .left-rail .mobile-panel-toggle{border:1px solid rgba(116,211,231,.2)!important;border-radius:5px!important;background:rgba(11,34,49,.72)!important}
+ .left-rail .mobile-panel-toggle.active{border-color:var(--cyan)!important;background:rgba(55,161,188,.24)!important}
+ .hero-copy,.right-panel,.temporal-console,.bottom-hud{display:none!important}
+ .hero-copy.mobile-panel-open,.right-panel.mobile-panel-open,.temporal-console.mobile-panel-open,.bottom-hud.mobile-panel-open{display:block!important}
+ .temporal-console.mobile-panel-open{
+   position:absolute!important;left:9px!important;right:9px!important;top:auto!important;bottom:62px!important;
+   width:auto!important;max-height:min(48dvh,390px)!important;overflow:auto!important;
+   padding:10px!important;border:1px solid rgba(110,205,230,.36)!important;border-radius:9px!important;
+   background:rgba(4,15,27,.96)!important;backdrop-filter:blur(14px)!important;z-index:12!important;
+   box-shadow:0 12px 35px rgba(0,0,0,.45)!important;touch-action:pan-y
+ }
+ .temporal-console.mobile-panel-open .temporal-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+ .temporal-console.mobile-panel-open .temporal-head strong{font-size:23px}
+ .temporal-console.mobile-panel-open .temporal-kicker{font-size:8px}
+ .temporal-console.mobile-panel-open .temporal-head small{font-size:7px}
+ .temporal-console.mobile-panel-open .timeline-track{margin:8px 0 6px}
+ .temporal-console.mobile-panel-open .timeline-years button{min-height:25px}
+ .temporal-console.mobile-panel-open .temporal-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+ .temporal-console.mobile-panel-open .temporal-stats span{font-size:6px}
+ .temporal-console.mobile-panel-open .temporal-stats b{font-size:10px}
+ .temporal-console.mobile-panel-open .temporal-events{max-height:92px;overflow:auto}
+ .right-panel.mobile-panel-open{
+   position:absolute!important;left:9px!important;right:9px!important;top:57px!important;bottom:62px!important;
+   width:auto!important;max-width:none!important;max-height:none!important;overflow:auto!important;
+   padding:10px!important;border:1px solid rgba(110,205,230,.36)!important;border-radius:9px!important;
+   background:rgba(4,15,27,.96)!important;backdrop-filter:blur(14px)!important;z-index:12!important;
+   box-shadow:0 12px 35px rgba(0,0,0,.45)!important;touch-action:pan-y
+ }
+ .right-panel.mobile-panel-open .metric-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .hero-copy.mobile-panel-open{
+   position:absolute!important;left:10px!important;right:10px!important;top:58px!important;bottom:auto!important;
+   width:auto!important;max-width:none!important;padding:12px!important;border:1px solid rgba(110,205,230,.36)!important;
+   border-radius:9px!important;background:rgba(4,15,27,.96)!important;z-index:12!important
+ }
+ .hero-copy.mobile-panel-open .hero-desc,.hero-copy.mobile-panel-open .hero-footnote{display:block!important}
+ .bottom-hud.mobile-panel-open{
+   display:flex!important;position:absolute!important;left:9px!important;right:9px!important;bottom:62px!important;
+   padding:10px!important;border:1px solid rgba(110,205,230,.36)!important;border-radius:9px!important;
+   background:rgba(4,15,27,.96)!important;z-index:12!important
+ }
+ #comparison-panel:not(.hidden){display:block!important;position:absolute!important;left:12px!important;right:12px!important;bottom:calc(min(48dvh,390px) + 70px)!important;top:auto!important;z-index:13!important;max-height:25dvh!important;overflow:auto!important}
+}
