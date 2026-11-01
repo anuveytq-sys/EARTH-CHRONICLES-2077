@@ -222,3 +222,50 @@ html,body,#app{width:100%;height:100%;height:100dvh;min-height:0;overflow:hidden
   .modal-backdrop{padding:8px;overflow:auto}
   .modal-card{width:min(430px,calc(100vw - 16px));max-height:calc(100dvh - 16px);overflow:auto}
 }
+
+/* Mobile globe-first layout: nav is a single scroll row; no HUD cards cover Earth. */
+@media(max-width:800px){
+ html,body,#app{width:100%;height:100%;height:100dvh;min-height:0;overflow:hidden}
+ #world-root{position:absolute;inset:0!important}
+ #world-root canvas{width:100%!important;height:100%!important;object-fit:cover}
+ .space-vignette{background:radial-gradient(ellipse at 50% 48%,transparent 45%,rgba(2,7,14,.24) 100%)}
+ .topbar{height:52px;padding:0 10px}
+ .brand{gap:7px}
+ .brand strong{font-size:13px;letter-spacing:1px}
+ .brand small{font-size:5.5px;letter-spacing:.7px}
+ .brand-mark{width:24px;height:24px}
+ .icon-button{width:32px;height:32px}
+ .top-status{display:none}
+ .interface{inset:52px 0 0!important}
+ .left-rail{
+   position:absolute;top:6px;left:8px;right:8px;bottom:auto;width:auto;height:43px;
+   display:flex;flex-direction:row;align-items:stretch;justify-content:flex-start;gap:3px;
+   overflow-x:auto;overflow-y:hidden;white-space:nowrap;padding:2px;
+   border:1px solid rgba(133,184,220,.22);border-radius:8px;
+   background:rgba(3,13,24,.88);backdrop-filter:blur(12px);
+   scrollbar-width:none;z-index:8;touch-action:pan-x
+ }
+ .left-rail::-webkit-scrollbar{display:none}
+ .rail-label,.rail-bottom{display:none!important}
+ .rail-item{
+   flex:0 0 88px!important;min-width:88px!important;width:88px!important;height:37px!important;
+   display:flex;flex-direction:row;align-items:center;justify-content:center;gap:5px;
+   padding:3px 5px!important;border:0!important;border-bottom:2px solid transparent!important;
+   background:transparent!important;text-align:left
+ }
+ .rail-item.active{border-bottom-color:var(--cyan)!important;background:rgba(55,161,188,.16)!important}
+ .rail-item .rail-icon{font-size:15px;width:17px;flex:none}
+ .rail-item span:nth-child(2){font:6px/1.25 "DM Mono",monospace;white-space:normal}
+ .rail-item em{display:none}
+ .hero-copy,.right-panel,.temporal-console,.comparison-panel,.bottom-hud{display:none!important}
+ .globe-controls{position:absolute;right:12px;left:auto;top:auto;bottom:76px;display:flex;flex-direction:column;gap:5px;z-index:7}
+ .globe-controls button{width:34px;height:34px;border-radius:7px;background:rgba(3,15,27,.88);font-size:17px}
+ .toast{bottom:72px;max-width:calc(100vw - 30px);white-space:normal;text-align:center;z-index:30}
+ .modal-backdrop{z-index:40;padding:10px}
+ .modal-card{width:100%;max-width:620px;max-height:calc(100dvh - 20px);padding:15px;overflow:auto}
+}
+@media(max-width:430px){
+ .brand strong{font-size:12px}
+ .brand small{font-size:5px}
+ .rail-item{flex-basis:82px!important;min-width:82px!important;width:82px!important}
+}
