@@ -1,2 +1,13 @@
 #world-root .cesium-viewer{position:absolute;inset:0}#world-root .cesium-viewer-cesiumWidgetContainer{position:absolute;inset:0}#world-root .cesium-widget canvas{outline:0}#world-root .cesium-viewer-bottom{bottom:4px;right:8px;opacity:.8;z-index:3}#cesium-world-tools{position:fixed;z-index:24;left:clamp(12px,17vw,280px);top:78px;width:min(480px,calc(100vw - 28px));padding:10px;background:#071522eF;border:1px solid #326078;border-radius:8px;box-shadow:0 12px 35px #0008;backdrop-filter:blur(12px);font-family:'DM Mono',monospace}#cesium-place-search{display:flex;gap:6px}#cesium-place-query{min-width:0;flex:1;background:#0d2535;border:1px solid #2b5268;color:#e7f7ff;padding:10px 12px;font-size:12px;outline:none}#cesium-place-search button,.cesium-tool-row button{border:1px solid #3a7182;background:#103443;color:#72e8cf;padding:9px 11px;font:10px 'DM Mono',monospace;cursor:pointer}#cesium-place-search button:hover,.cesium-tool-row button.active{background:#155348;border-color:#6be5bc;color:#c4fff0}.cesium-tool-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:7px}.cesium-tool-row button{font-size:9px;padding:7px 8px}.cesium-tool-row span{color:#8db2c4;font-size:9px;margin-left:auto}#cesium-source-note{display:block;color:#7297a9;font-size:9px;margin-top:6px}@media(max-width:760px){#cesium-world-tools{left:10px;top:68px;width:calc(100vw - 20px);padding:7px}#cesium-place-query{font-size:11px;padding:9px}.cesium-tool-row span{width:100%;margin-left:0}.cesium-tool-row button{flex:1}.cesium-viewer-bottom{transform:scale(.8);transform-origin:bottom right}}
-#cesium-tectonic-note{color:#c9a985;font:9px/1.5 'DM Mono',monospace;margin-top:7px;padding:7px 8px;border-left:2px solid #d69b64;background:#211a16}
+
+/* Compact globe search; keep map canvas unobstructed. */
+#cesium-world-tools{left:112px;top:auto;bottom:18px;width:min(420px,calc(100vw - 150px));padding:7px}
+#cesium-world-tools .cesium-tool-row{margin-top:5px}
+#cesium-world-tools .cesium-tool-row button{flex:0 0 auto}
+#cesium-world-tools .cesium-tool-row span{font-size:8px}
+@media(max-width:800px){
+ #cesium-world-tools{left:10px;right:86px;bottom:10px;top:auto;width:auto;max-width:none;padding:6px;background:rgba(4,15,27,.9)}
+ #cesium-place-query{font-size:11px;padding:9px 10px}
+ #cesium-world-tools .cesium-tool-row{display:none}
+ #cesium-place-search button{padding:8px 10px}
+}
