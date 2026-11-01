@@ -56,6 +56,39 @@ export class PlanetWorld {
     if(this.clouds)this.clouds.material.opacity=.12+water/100*.16;
     if(this.earth?.material)this.earth.material.color.setRGB(1, .94+env/1800, .92+climate/2200);
   }
+  setPhase7State(state){
+    this.phase7State=state;
+    if(!this.phase7Canvas){
+      this.phase7Canvas=document.createElement("canvas");this.phase7Canvas.width=2048;this.phase7Canvas.height=1024;
+      this.phase7Context=this.phase7Canvas.getContext("2d");this.phase7Texture=new THREE.CanvasTexture(this.phase7Canvas);this.phase7Texture.colorSpace=THREE.SRGBColorSpace;
+      this.phase7Surface=new THREE.Mesh(new THREE.SphereGeometry(1.019,96,96),new THREE.MeshBasicMaterial({map:this.phase7Texture,transparent:true,opacity:.9,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.FrontSide}));
+      this.phase7Surface.renderOrder=3;this.planet.add(this.phase7Surface);
+    }
+    const ctx=this.phase7Context,w=this.phase7Canvas.width,h=this.phase7Canvas.height;ctx.clearRect(0,0,w,h);
+    const defs={amazon:{lat:-3.4,lon:-60,color:"#43f078",system:"environment"},arctic:{lat:72,lon:20,color:"#77dfff",system:"climate"},sahara:{lat:23,lon:12,color:"#f0c66b",system:"food"},southasia:{lat:21,lon:82,color:"#55e6c1",system:"cities"},coral:{lat:1,lon:125,color:"#39dfe8",system:"ocean"}};
+    const scanColors={ecosystem:"#49e878",water:"#38bce8",climate:"#ffad55",ocean:"#37dfe8",human:"#d28bff",resources:"#f4d36b"};
+    const selected=state.selectedRegion;const scanColor=scanColors[state.scan]||"#49e878";
+    for(const [id,p] of Object.entries(defs)){
+      const val=THREE.MathUtils.clamp(Number(state.regions?.[id]??50),0,100),x=((p.lon+180)/360)*w,y=((90-p.lat)/180)*h;
+      const color=id===selected?scanColor:p.color,alpha=.12+(val/100)*.42,r=65+val*1.1;
+      ctx.save();ctx.translate(x,y);const g=ctx.createRadialGradient(0,0,3,0,0,r);g.addColorStop(0,color+Math.round(alpha*255).toString(16).padStart(2,"0"));g.addColorStop(.55,color+Math.round(alpha*.52*255).toString(16).padStart(2,"0"));g.addColorStop(1,color+"00");ctx.fillStyle=g;ctx.beginPath();ctx.ellipse(0,0,r,r*.62,0,0,Math.PI*2);ctx.fill();ctx.restore();
+    }
+    this.phase7Texture.needsUpdate=true;
+    const avg=THREE.MathUtils.clamp(Number(state.average??50),0,100);
+    const tint=new THREE.Color().setHSL(.48-(avg/100)*.12,.78,.48);
+    if(this.atmosphere?.material?.uniforms?.glowColor)this.atmosphere.material.uniforms.glowColor.value.copy(tint);
+    if(this.glow?.material){this.glow.material.color.copy(tint);this.glow.material.opacity=.025+avg/1400;}
+    if(this.clouds)this.clouds.material.opacity=.12+avg/500;
+    const colors={amazon:0x43f078,arctic:0x77dfff,sahara:0xf0c66b,southasia:0x55e6c1,coral:0x39dfe8};
+    this.markerMeshes.forEach(marker=>{
+      const id=marker.userData.region.id,level=THREE.MathUtils.clamp(Number(state.regions?.[id]??0),0,100);
+      const base=new THREE.Color(colors[id]??marker.userData.baseColor),stress=new THREE.Color(0xff775f);
+      const color=base.clone().lerp(stress,(100-level)/160);
+      marker.material.color.copy(color);marker.scale.setScalar(1+level/125);
+      const ring=marker.children[0];if(ring){ring.material.color.copy(color);ring.material.opacity=.28+level/140;ring.scale.setScalar(1+level/95);}
+    });
+    this.phase7Surface.visible=true;
+  }
   setAuditVisual(mode="recovery"){
     const palettes={recovery:0x55e6a8,stress:0xff9b55,baseline:0x398bdb};
     const color=new THREE.Color(palettes[mode]||palettes.baseline);
